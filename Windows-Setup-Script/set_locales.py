@@ -1,52 +1,64 @@
-import ctypes
-from ctypes import wintypes
+import winreg
+import json
+import logging
 
-HWND_BROADCAST = 0xFFFF
-WM_SETTINGCHANGE = 0x001A
+logging.basicConfig(level=logging.INFO)
 
-# Constants from WinNls.h and Winnls32.h
-LOCALE_USER_DEFAULT = 0x0400
-LOCALE_SDECIMAL = 0x000E
-LOCALE_STHOUSAND = 0x000F
-LOCALE_SGROUPING = 0x0020
-LOCALE_INEGNUMBER = 0x1010
-LOCALE_SCURRENCY = 0x00014
-LOCALE_ICURRDIGITS = 0x00019
-LOCALE_SMONDECIMALSEP = 0x00016
-LOCALE_SMONTHOUSANDSEP = 0x00017
-LOCALE_SMONGROUPING = 0x00018
-LOCALE_ICURRENCY = 0x0001B
-LOCALE_INEGCURR = 0x0001C
-
-# Load the User32 DLL
-user32 = ctypes.WinDLL('user32', use_last_error=True)
-
-# Define necessary types
-LCID = wintypes.LCID
-LCTYPE = wintypes.DWORD
+KEY_PATH = r"Control Panel\International"
+CONFIG_FILE = "config.json"
 
 
-# Function to change locale settings
-def set_locale_info(lctype, value):
-    if not ctypes.windll.kernel32.SetLocaleInfoW(LCID(LOCALE_USER_DEFAULT), LCTYPE(lctype), ctypes.c_wchar_p(value)):
-        raise ctypes.WinError(ctypes.get_last_error())
-    # It's necessary to broadcast a message that settings have changed
-    user32.SendMessageTimeoutW(HWND_BROADCAST, WM_SETTINGCHANGE, 0, 0, 0, 1000, ctypes.byref(wintypes.DWORD()))
+def read_config_file(file_path: str) -> dict | None:
+    """
+    Attempts to read and return the contents of a JSON configuration file.
+    """
+    try:
+        with open(file_path, "r") as file:
+            config_data = json.load(file)
+            logging.info(f"Successfully read configuration from {file_path}")
+            return config_data
+    except FileNotFoundError as e:
+        logging.error(f"{file_path} not found. Error: {e}")
+    except json.JSONDecodeError as e:
+        logging.error(f"Error decoding JSON in {file_path}: {e}")
+    except Exception as e:
+        logging.error(f"Unexpected error when reading {file_path}: {e}")
+    return None
 
 
-# Set number format
-set_locale_info(LOCALE_SDECIMAL, ".")
-set_locale_info(LOCALE_STHOUSAND, " ")
-set_locale_info(LOCALE_SGROUPING, "3;0")
-set_locale_info(LOCALE_INEGNUMBER, "1")
+def set_registry_values(key, config_values):
+    """
+    Sets registry values based on the configuration data.
+    """
+    try:
+        for value_name, value_data in config_values["localeValues"].items():
+            if isinstance(value_data, str):
+                registry_type = winreg.REG_SZ
+            elif isinstance(value_data, int):
+                registry_type = winreg.REG_DWORD
+            else:
+                raise ValueError(f"Unsupported type for value {value_name}: {type(value_data)}")
 
-# Set currency format
-set_locale_info(LOCALE_SCURRENCY, "zł")
-set_locale_info(LOCALE_ICURRDIGITS, "2")
-set_locale_info(LOCALE_SMONDECIMALSEP, ".")
-set_locale_info(LOCALE_SMONTHOUSANDSEP, " ")
-set_locale_info(LOCALE_SMONGROUPING, "3;0")
-set_locale_info(LOCALE_ICURRENCY, "0")  # 0 = prefix, no space
-set_locale_info(LOCALE_INEGCURR, "8")  # 8 = minus sign, prefix, no space
+            winreg.SetValueEx(key, value_name, 0, registry_type, value_data)
 
-print("Locale settings updated.")
+        logging.info("Registry values set successfully.")
+    except Exception as e:
+        logging.error(f"Error setting registry values: {e}")
+
+
+def main():
+    config_data = read_config_file(CONFIG_FILE)
+
+    if config_data and "localeValues" in config_data:
+        try:
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, KEY_PATH, 0, winreg.KEY_SET_VALUE)
+        except FileNotFoundError:
+            key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, KEY_PATH)
+
+        set_registry_values(key, config_data)
+    else:
+        logging.error("Configuration validation failed or the configuration file could not be read.")
+
+
+if __name__ == "__main__":
+    main()
