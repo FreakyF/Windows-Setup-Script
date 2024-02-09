@@ -1,7 +1,7 @@
 import os
-import logging
-from config_service import setup_logging, read_config_file, validate_config_section
 from typing import List
+
+from config_service import setup_logging, read_config_file, validate_config_section, logging
 
 CONFIG_FILE = "config.json"
 
