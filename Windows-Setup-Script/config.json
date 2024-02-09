@@ -1,0 +1,24 @@
+{
+  "foldersToCreate": [
+    "C:\\Repos",
+    "C:\\Games",
+    "C:\\Games\\Steam",
+    "C:\\Games\\Riot Games",
+    "C:\\Games\\Battle.net",
+    "C:\\Games\\Epic Games",
+    "C:\\Virtual Machines"
+  ],
+  "foldersToHide": [
+    "C:\\PerfLogs",
+    "C:\\ProgramData",
+    "C:\\Temp",
+    "C:\\Windows",
+    "C:\\Recovery"
+  ],
+  "foldersToExcludeFromDefender": [
+    "C:\\Repos",
+    "C:\\Games",
+    "%USERPROFILE%\\Desktop",
+    "%USERPROFILE%\\Downloads"
+  ]
+}
