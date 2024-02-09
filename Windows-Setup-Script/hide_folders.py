@@ -1,82 +1,78 @@
 import os
-import json
-import logging
+import ctypes
+from typing import List
 
-logging.basicConfig(level=logging.INFO)
+from config_service import setup_logging, read_config_file, validate_config_section, logging
 
 CONFIG_FILE = "config.json"
 
 
-def read_config_file(file_path: str) -> dict | None:
+def set_hidden_attribute(folder_path: str):
     """
-    Attempts to read and return the contents of a JSON configuration file.
+    Sets the hidden attribute to a folder in Windows.
+    Uses the SetFileAttributesW function from the Windows API through ctypes.
+
+    Parameters:
+    - folder_path (str): The path of the folder to hide.
     """
-    try:
-        with open(file_path, "r") as file:
-            config_data = json.load(file)
-            logging.info(f"Successfully read configuration from {file_path}")
-            return config_data
-    except FileNotFoundError as e:
-        logging.error(f"{file_path} not found. Error: {e}")
-    except json.JSONDecodeError as e:
-        logging.error(f"Error decoding JSON in {file_path}: {e}")
-    except Exception as e:
-        logging.error(f"Unexpected error when reading {file_path}: {e}")
-    return None
+    FILE_ATTRIBUTE_HIDDEN = 0x02
+    if not ctypes.windll.kernel32.SetFileAttributesW(folder_path, FILE_ATTRIBUTE_HIDDEN):
+        raise ctypes.WinError()
 
 
-def validate_config(config_data: dict) -> bool:
+def hide_folders(folders_list: List[str], enabled: bool) -> None:
     """
-    Validates the configuration data to ensure it contains required keys.
+    Hides directories specified in `folders_list` if `enabled` is True. Each folder is hidden only if it is
+    not already hidden. The function logs the outcome of each attempt to hide a directory, including cases where
+    the directory is already hidden, where the hiding is successful, and where an error occurs during hiding.
+    Paths in `folders_list` can include environment variables, which are expanded to their values.
+
+    Parameters:
+    - folders_list (List[str]): A list of directory paths to hide.
+    - enabled (bool): If False, directory hiding is skipped, and a log entry is made indicating it's disabled.
     """
-    if "foldersToHide" in config_data:
-        if isinstance(config_data["foldersToHide"], list):
-            return True
-        else:
-            logging.error("'foldersToHide' must be a list.")
-    else:
-        logging.error("'foldersToHide' key not found in the configuration file.")
-    return False
+    if not enabled:
+        logging.info("Directory hiding is skipped as it's disabled by configuration.")
+        return
+
+    for folder_path in folders_list:
+        folder_path = os.path.expandvars(folder_path)
+
+        if not os.path.exists(folder_path):
+            logging.error(f"Directory '{folder_path}' does not exist. Skipping...")
+            continue
+
+        # TODO: Create check if the directory is already hidden.
+
+        try:
+            set_hidden_attribute(folder_path)
+            logging.info(f"Directory '{folder_path}' is now hidden.")
+        except Exception as e:
+            logging.error(f"Failed to hide directory '{folder_path}': {str(e)}")
 
 
-def is_hidden(folder_path: str) -> bool:
+def main() -> None:
     """
-    Check if the folder is already hidden.
+    Executes the main functionality of the script which includes setting up logging, reading the configuration
+    file, validating the 'hideFolders' configuration section, and conditionally hiding directories based on
+    the configuration.
     """
-    try:
-        attributes = os.stat(folder_path).st_file_attributes
-        return attributes & 2 == 2  # Check if the hidden attribute is set
-    except Exception as e:
-        logging.error(f"Error checking hidden status for folder {folder_path}: {e}")
-        return False
-
-
-def hide_folders(folders_list: list):
-    """
-    Hides the folders specified in the folders_list by setting the 'hidden' attribute.
-    """
-    for folder in folders_list:
-        if os.path.exists(folder):
-            if not is_hidden(folder):
-                try:
-                    os.system(f'attrib +h "{folder}"')
-                    logging.info(f"Hidden folder: {folder}")
-                except Exception as e:
-                    logging.error(f"Error hiding folder {folder}: {e}")
-            else:
-                logging.info(f"Folder already hidden: {folder}")
-        else:
-            logging.info(f"Folder not found: {folder}")
-
-
-def main():
+    setup_logging()
     config_data = read_config_file(CONFIG_FILE)
 
-    if config_data and validate_config(config_data):
-        folders_to_hide = config_data["foldersToHide"]
-        hide_folders(folders_to_hide)
-    else:
-        logging.error("Configuration validation failed or the configuration file could not be read.")
+    if not config_data:
+        logging.error("Failed to read the configuration file.")
+        return
+
+    hide_folders_section_keys = [
+        {'key': 'enabled', 'type': bool},
+        {'key': 'paths', 'type': list}
+    ]
+    if not validate_config_section(config_data.get("hideFolders", {}), hide_folders_section_keys):
+        logging.error("The 'hideFolders' section in the configuration is invalid.")
+        return
+
+    hide_folders(config_data["hideFolders"]["paths"], config_data["hideFolders"]["enabled"])
 
 
 if __name__ == "__main__":
