@@ -6,6 +6,22 @@ from config_service import setup_logging, read_config_file, validate_config_sect
 
 CONFIG_FILE = "config.json"
 
+FILE_ATTRIBUTE_HIDDEN = 0x02
+
+
+def is_hidden(folder_path: str) -> bool:  # TODO: Rewrite the method annotation or simplify this method.
+    """
+    Checks if the specified folder is hidden in Windows.
+
+    Parameters:
+    - folder_path (str): The path of the folder to check.
+
+    Returns:
+    - bool: True if the folder is hidden, False otherwise.
+    """
+    return (ctypes.windll.kernel32.GetFileAttributesW(folder_path) != -1) and \
+        (ctypes.windll.kernel32.GetFileAttributesW(folder_path) & FILE_ATTRIBUTE_HIDDEN != 0)
+
 
 def set_hidden_attribute(folder_path: str):
     """
@@ -15,7 +31,6 @@ def set_hidden_attribute(folder_path: str):
     Parameters:
     - folder_path (str): The path of the folder to hide.
     """
-    FILE_ATTRIBUTE_HIDDEN = 0x02
     if not ctypes.windll.kernel32.SetFileAttributesW(folder_path, FILE_ATTRIBUTE_HIDDEN):
         raise ctypes.WinError()
 
@@ -42,7 +57,9 @@ def hide_folders(folders_list: List[str], enabled: bool) -> None:
             logging.error(f"Directory '{folder_path}' does not exist. Skipping...")
             continue
 
-        # TODO: Create check if the directory is already hidden.
+        if is_hidden(folder_path):
+            logging.info(f"Directory '{folder_path}' is already hidden.")
+            continue
 
         try:
             set_hidden_attribute(folder_path)
