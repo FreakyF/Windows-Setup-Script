@@ -23,7 +23,7 @@ def is_hidden(folder_path: str) -> bool:  # TODO: Rewrite the method annotation 
         (ctypes.windll.kernel32.GetFileAttributesW(folder_path) & FILE_ATTRIBUTE_HIDDEN != 0)
 
 
-def set_hidden_attribute(folder_path: str):
+def set_hidden_attribute(folder_path: str) -> None:
     """
     Sets the hidden attribute to a folder in Windows.
     Uses the SetFileAttributesW function from the Windows API through ctypes.
