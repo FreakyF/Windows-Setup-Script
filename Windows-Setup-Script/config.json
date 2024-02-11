@@ -34,46 +34,166 @@
   "localeSettings": {
     "enabled": true,
     "formatOptions": {
-      "Locale": "00000409",
-      "LocaleName": "en-US",
-      "s1159": "AM",
-      "s2359": "PM",
-      "sCurrency": "zł",
-      "sDate": "/",
-      "sDecimal": ".",
-      "sGrouping": "3;0",
-      "sLanguage": "ENU",
-      "sList": ",",
-      "sLongDate": "dddd, d MMMM yyyy",
-      "sMonDecimalSep": ".",
-      "sMonGrouping": "3;0",
-      "sMonThousandSep": " ",
-      "sNativeDigits": "0123456789",
-      "sNegativeSign": "-",
-      "sPositiveSign": "",
-      "sShortDate": "dd/MM/yyyy",
-      "sThousand": " ",
-      "sTime": ":",
-      "sTimeFormat": "HH:mm:ss",
-      "sShortTime": "HH:mm",
-      "sYearMonth": "MMMM yyyy",
-      "iCalendarType": "1",
-      "iCountry": "1",
-      "iCurrDigits": "2",
-      "iCurrency": "3",
-      "iDate": "1",
-      "iDigits": "2",
-      "NumShape": "1",
-      "iFirstDayOfWeek": "0",
-      "iFirstWeekOfYear": "0",
-      "iLZero": "1",
-      "iMeasure": "0",
-      "iNegCurr": "8",
-      "iNegNumber": "1",
-      "iPaperSize": "1",
-      "iTime": "1",
-      "iTimePrefix": "0",
-      "iTLZero": "1"
+      "Locale": {
+        "value": "00000409",
+        "enabled": true
+      },
+      "LocaleName": {
+        "value": "en-US",
+        "enabled": true
+      },
+      "s1159": {
+        "value": "AM",
+        "enabled": true
+      },
+      "s2359": {
+        "value": "PM",
+        "enabled": true
+      },
+      "sCurrency": {
+        "value": "zł",
+        "enabled": true
+      },
+      "sDate": {
+        "value": "/",
+        "enabled": true
+      },
+      "sDecimal": {
+        "value": ".",
+        "enabled": true
+      },
+      "sGrouping": {
+        "value": "3;0",
+        "enabled": true
+      },
+      "sLanguage": {
+        "value": "ENU",
+        "enabled": true
+      },
+      "sList": {
+        "value": ",",
+        "enabled": true
+      },
+      "sLongDate": {
+        "value": "dddd, d MMMM yyyy",
+        "enabled": true
+      },
+      "sMonDecimalSep": {
+        "value": ".",
+        "enabled": true
+      },
+      "sMonGrouping": {
+        "value": "3;0",
+        "enabled": true
+      },
+      "sMonThousandSep": {
+        "value": " ",
+        "enabled": true
+      },
+      "sNativeDigits": {
+        "value": "0123456789",
+        "enabled": true
+      },
+      "sNegativeSign": {
+        "value": "-",
+        "enabled": true
+      },
+      "sPositiveSign": {
+        "value": "",
+        "enabled": true
+      },
+      "sShortDate": {
+        "value": "dd/MM/yyyy",
+        "enabled": true
+      },
+      "sThousand": {
+        "value": " ",
+        "enabled": true
+      },
+      "sTime": {
+        "value": ":",
+        "enabled": true
+      },
+      "sTimeFormat": {
+        "value": "HH:mm:ss",
+        "enabled": true
+      },
+      "sShortTime": {
+        "value": "HH:mm",
+        "enabled": true
+      },
+      "sYearMonth": {
+        "value": "MMMM yyyy",
+        "enabled": true
+      },
+      "iCalendarType": {
+        "value": "1",
+        "enabled": true
+      },
+      "iCountry": {
+        "value": "1",
+        "enabled": true
+      },
+      "iCurrDigits": {
+        "value": "2",
+        "enabled": true
+      },
+      "iCurrency": {
+        "value": "3",
+        "enabled": true
+      },
+      "iDate": {
+        "value": "1",
+        "enabled": true
+      },
+      "iDigits": {
+        "value": "2",
+        "enabled": true
+      },
+      "NumShape": {
+        "value": "1",
+        "enabled": true
+      },
+      "iFirstDayOfWeek": {
+        "value": "0",
+        "enabled": true
+      },
+      "iFirstWeekOfYear": {
+        "value": "0",
+        "enabled": true
+      },
+      "iLZero": {
+        "value": "1",
+        "enabled": true
+      },
+      "iMeasure": {
+        "value": "0",
+        "enabled": true
+      },
+      "iNegCurr": {
+        "value": "8",
+        "enabled": true
+      },
+      "iNegNumber": {
+        "value": "1",
+        "enabled": true
+      },
+      "iPaperSize": {
+        "value": "1",
+        "enabled": true
+      },
+      "iTime": {
+        "value": "1",
+        "enabled": true
+      },
+      "iTimePrefix": {
+        "value": "0",
+        "enabled": true
+      },
+      "iTLZero": {
+        "value": "1",
+        "enabled": true
+      }
     }
   }
 }
