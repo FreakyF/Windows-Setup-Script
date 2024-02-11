@@ -8,10 +8,10 @@ CONFIG_FILE = "config.json"
 
 def create_folders(folders_list: List[str], enabled: bool) -> None:
     """
-    Creates directories specified in `folders_list` if `enabled` is True. Each folder is created only if it does
-    not already exist. The function logs the outcome of each attempt to create a directory, including cases where
-    the directory already exists, where the creation is successful, and where an error occurs during creation.
-    Paths in `folders_list` can include environment variables, which are expanded to their values.
+    Creates directories specified in `folders_list` if `enabled` is True. Each folder is created only if it does not
+    already exist. The function logs the outcome of each attempt to create a directory, including cases where the
+    directory already exists, where the creation is successful, and where an error occurs during creation. Paths in
+    `folders_list` can include environment variables, which are expanded to their values.
 
     Parameters:
     - folders_list (List[str]): A list of directory paths to create.
@@ -40,9 +40,9 @@ def create_folders(folders_list: List[str], enabled: bool) -> None:
 
 def main() -> None:
     """
-    Executes the main functionality of the script which includes setting up logging, reading the configuration
-    file, validating the 'createFolders' configuration section, and conditionally creating directories based on
-    the configuration.
+    Executes the main functionality of the script which includes setting up logging, reading the configuration file,
+    validating the 'createFolders' configuration section, and conditionally creating directories based on the
+    configuration.
     """
     setup_logging()
     config_data = read_config_file(CONFIG_FILE)
