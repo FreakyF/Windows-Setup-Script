@@ -195,5 +195,15 @@
         "enabled": true
       }
     }
+  },
+  "servicesSettings": {
+    "enabled": true,
+    "services": [
+      {
+        "name": "LenovoFnAndFunctionKeys",
+        "startupType": "Disabled",
+        "serviceStatus": "Stopped"
+      }
+    ]
   }
 }
