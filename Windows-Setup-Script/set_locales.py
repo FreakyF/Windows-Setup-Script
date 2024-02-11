@@ -15,20 +15,20 @@ def modify_locale(settings: dict, enabled: bool) -> None:
         with reg.OpenKey(reg.HKEY_CURRENT_USER, KEY_PATH, 0, reg.KEY_WRITE | reg.KEY_READ) as key:
             for setting, setting_info in settings.items():
                 if not setting_info.get('enabled', False):
-                    logging.info(f"Registry setting '{setting}' is disabled in configuration. Skipping.")
+                    logging.info(f"Registry setting '{setting}' is disabled in configuration. Skipping...")
                     continue
 
                 new_value = setting_info.get('value')
                 try:
                     current_value, _ = reg.QueryValueEx(key, setting)
                     if current_value == new_value:
-                        logging.info(f"Registry setting '{setting}' already set to '{new_value}'. Skipping.")
+                        logging.info(f"Registry setting '{setting}' already set to '{new_value}'. Skipping...")
                         continue
                     else:
                         reg.SetValueEx(key, setting, 0, reg.REG_SZ, new_value)
                         logging.info(f"Registry setting '{setting}' changed to '{new_value}'.")
                 except FileNotFoundError:
-                    logging.info(f"Registry setting '{setting}' does not exist. Skipping.")
+                    logging.info(f"Registry setting '{setting}' does not exist. Skipping...")
 
     except Exception as e:
         logging.error(f"Failed to modify registry: {str(e)}")
