@@ -1,5 +1,6 @@
-from config_service import setup_logging, read_config_file, validate_config_section, logging
 import winreg as reg
+
+from config_service import setup_logging, read_config_file, validate_config_section, logging
 
 CONFIG_FILE = "config.json"
 KEY_PATH = r"Control Panel\International"
