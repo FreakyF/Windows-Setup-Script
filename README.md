@@ -55,13 +55,19 @@ Windows Terminal Configuration: Personalizes Windows Terminal settings to enhanc
 
 ## 🛠️ Installation
 
+🚧 Under construction 🚧
+
 <a name="configuration"></a>
 
 ## ⚙️ Configuration
 
+🚧 Under construction 🚧
+
 <a name="usage"></a>
 
 ## 👩‍💻 Usage
+
+🚧 Under construction 🚧
 
 <a name="license"></a>
 
