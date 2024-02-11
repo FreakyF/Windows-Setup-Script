@@ -7,6 +7,18 @@ KEY_PATH = r"Control Panel\International"
 
 
 def modify_locale(settings: dict, enabled: bool) -> None:
+    """
+    Modifies Windows registry settings for locale configurations if `enabled` is True. It updates each registry setting
+    specified in `settings` to its corresponding new value, provided the setting is enabled within the `settings` dict.
+    The function logs the outcome of each attempt to modify a registry setting, including cases where the setting
+    already matches the desired value, where the modification is successful, and where the setting does not exist or
+    an error occurs during modification. This ensures only necessary changes are applied and maintains a record of actions taken.
+
+    Parameters:
+    - settings (dict): A dictionary of registry settings to modify, with each setting having a sub-dictionary that
+      specifies whether it is enabled and what the new value should be.
+    - enabled (bool): If False, registry modification is skipped, and a log entry is made indicating this feature is disabled.
+    """
     if not enabled:
         logging.info("Registry modification is skipped as it's disabled by configuration.")
         return
@@ -35,6 +47,11 @@ def modify_locale(settings: dict, enabled: bool) -> None:
 
 
 def main() -> None:
+    """
+    Executes the main functionality of the script which includes setting up logging, reading the configuration file,
+    validating the 'localeSettings' configuration section, and conditionally modifying locales based on the
+    configuration.
+    """
     setup_logging()
     config_data = read_config_file(CONFIG_FILE)
 
