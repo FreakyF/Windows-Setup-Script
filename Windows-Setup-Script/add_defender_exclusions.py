@@ -12,7 +12,8 @@ ADD_EXCLUSION_CMDLET = "Add-MpPreference -ExclusionPath"
 
 def get_current_exclusions() -> List[str]:
     """
-    Retrieves the current list of folder paths excluded in Windows Defender.
+    Retrieves the current list of folder paths that are excluded from scanning by Windows Defender. This is achieved by
+    executing a PowerShell command that queries Windows Defender's preferences for excluded paths.
 
     Returns:
     - List[str]: A list of paths that are currently excluded.
@@ -28,7 +29,10 @@ def get_current_exclusions() -> List[str]:
 
 def add_exclusion(folder_path: str) -> None:
     """
-    Adds a folder to Windows Defender exclusions using PowerShell.
+    Adds a specified folder path to the list of exclusions in Windows Defender,
+    effectively preventing the antivirus from scanning the specified folder. This
+    function constructs and executes a PowerShell command for adding an exclusion
+    path.
 
     Parameters:
     - folder_path (str): The path of the folder to add to exclusions.
