@@ -39,10 +39,10 @@ def set_hidden_attribute(folder_path: str) -> None:
 
 def hide_folders(folders_list: List[str], enabled: bool) -> None:
     """
-    Hides directories specified in `folders_list` if `enabled` is True. Each folder is hidden only if it is
-    not already hidden. The function logs the outcome of each attempt to hide a directory, including cases where
-    the directory is already hidden, where the hiding is successful, and where an error occurs during hiding.
-    Paths in `folders_list` can include environment variables, which are expanded to their values.
+    Hides directories specified in `folders_list` if `enabled` is True. Each folder is hidden only if it is not already
+    hidden. The function logs the outcome of each attempt to hide a directory, including cases where the directory is
+    already hidden, where the hiding is successful, and where an error occurs during hiding. Paths in `folders_list` can
+    include environment variables, which are expanded to their values.
 
     Parameters:
     - folders_list (List[str]): A list of directory paths to hide.
@@ -72,9 +72,8 @@ def hide_folders(folders_list: List[str], enabled: bool) -> None:
 
 def main() -> None:
     """
-    Executes the main functionality of the script which includes setting up logging, reading the configuration
-    file, validating the 'hideFolders' configuration section, and conditionally hiding directories based on
-    the configuration.
+    Executes the main functionality of the script which includes setting up logging, reading the configuration file,
+    validating the 'hideFolders' configuration section, and conditionally hiding directories based on the configuration.
     """
     setup_logging()
     config_data = read_config_file(CONFIG_FILE)
