@@ -29,10 +29,9 @@ def get_current_exclusions() -> List[str]:
 
 def add_exclusion(folder_path: str) -> None:
     """
-    Adds a specified folder path to the list of exclusions in Windows Defender,
-    effectively preventing the antivirus from scanning the specified folder. This
-    function constructs and executes a PowerShell command for adding an exclusion
-    path.
+    Adds a specified folder path to the list of exclusions in Windows Defender, effectively preventing the antivirus
+    from scanning the specified folder. This function constructs and executes a PowerShell command for adding an
+    exclusion path.
 
     Parameters:
     - folder_path (str): The path of the folder to add to exclusions.
