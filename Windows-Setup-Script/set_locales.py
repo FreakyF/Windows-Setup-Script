@@ -7,24 +7,18 @@ KEY_PATH = r"Control Panel\International"
 
 
 def modify_locale(settings: dict, enabled: bool) -> None:
-    """
-    Modifies existing Windows locale registry settings according to the specified settings if `enabled` is True. Only
-    modifies settings that already exist in the registry path defined in `KEY_PATH`. It logs which settings were
-    changed, which were skipped because they already had the desired value, and which were skipped because they do not
-    exist.
-
-    Parameters:
-    - settings (dict): A dictionary where each key is a registry value name and
-                       each value is the value to set for that name.
-    - enabled (bool): If False, registry modification is skipped, and a log entry is made indicating it's disabled.
-    """
     if not enabled:
         logging.info("Registry modification is skipped as it's disabled by configuration.")
         return
 
     try:
         with reg.OpenKey(reg.HKEY_CURRENT_USER, KEY_PATH, 0, reg.KEY_WRITE | reg.KEY_READ) as key:
-            for setting, new_value in settings.items():
+            for setting, setting_info in settings.items():
+                if not setting_info.get('enabled', False):
+                    logging.info(f"Registry setting '{setting}' is disabled in configuration. Skipping.")
+                    continue
+
+                new_value = setting_info.get('value')
                 try:
                     current_value, _ = reg.QueryValueEx(key, setting)
                     if current_value == new_value:
@@ -41,11 +35,6 @@ def modify_locale(settings: dict, enabled: bool) -> None:
 
 
 def main() -> None:
-    """
-    Executes the main functionality of the script which includes setting up logging, reading the configuration file,
-    validating the 'localeSettings' configuration section, and conditionally modifying registry settings based on the
-    configuration.
-    """
     setup_logging()
     config_data = read_config_file(CONFIG_FILE)
 
