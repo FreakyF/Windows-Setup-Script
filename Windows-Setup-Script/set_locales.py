@@ -1,63 +1,66 @@
-import winreg
-import json
-import logging
+from config_service import setup_logging, read_config_file, validate_config_section, logging
+import winreg as reg
 
-logging.basicConfig(level=logging.INFO)
-
-KEY_PATH = r"Control Panel\International"
 CONFIG_FILE = "config.json"
+KEY_PATH = r"Control Panel\International"
 
 
-def read_config_file(file_path: str) -> dict | None:
+def modify_locale(settings: dict, enabled: bool) -> None:
     """
-    Attempts to read and return the contents of a JSON configuration file.
+    Modifies existing Windows locale registry settings according to the specified settings if `enabled` is True. Only
+    modifies settings that already exist in the registry path defined in `KEY_PATH`. It logs which settings were
+    changed, which were skipped because they already had the desired value, and which were skipped because they do not
+    exist.
+
+    Parameters:
+    - settings (dict): A dictionary where each key is a registry value name and
+                       each value is the value to set for that name.
+    - enabled (bool): If False, registry modification is skipped, and a log entry is made indicating it's disabled.
     """
+    if not enabled:
+        logging.info("Registry modification is skipped as it's disabled by configuration.")
+        return
+
     try:
-        with open(file_path, "r") as file:
-            config_data = json.load(file)
-            logging.info(f"Successfully read configuration from {file_path}")
-            return config_data
-    except FileNotFoundError as e:
-        logging.error(f"{file_path} not found. Error: {e}")
-    except json.JSONDecodeError as e:
-        logging.error(f"Error decoding JSON in {file_path}: {e}")
+        with reg.OpenKey(reg.HKEY_CURRENT_USER, KEY_PATH, 0, reg.KEY_WRITE | reg.KEY_READ) as key:
+            for setting, new_value in settings.items():
+                try:
+                    current_value, _ = reg.QueryValueEx(key, setting)
+                    if current_value == new_value:
+                        logging.info(f"Registry setting '{setting}' already set to '{new_value}'. Skipping.")
+                        continue
+                    else:
+                        reg.SetValueEx(key, setting, 0, reg.REG_SZ, new_value)
+                        logging.info(f"Registry setting '{setting}' changed to '{new_value}'.")
+                except FileNotFoundError:
+                    logging.info(f"Registry setting '{setting}' does not exist. Skipping.")
+
     except Exception as e:
-        logging.error(f"Unexpected error when reading {file_path}: {e}")
-    return None
+        logging.error(f"Failed to modify registry: {str(e)}")
 
 
-def set_registry_values(key, config_values):
+def main() -> None:
     """
-    Sets registry values based on the configuration data.
+    Executes the main functionality of the script which includes setting up logging, reading the configuration file,
+    validating the 'localeSettings' configuration section, and conditionally modifying registry settings based on the
+    configuration.
     """
-    try:
-        for value_name, value_data in config_values["localeValues"].items():
-            if isinstance(value_data, str):
-                registry_type = winreg.REG_SZ
-            elif isinstance(value_data, int):
-                registry_type = winreg.REG_DWORD
-            else:
-                raise ValueError(f"Unsupported type for value {value_name}: {type(value_data)}")
-
-            winreg.SetValueEx(key, value_name, 0, registry_type, value_data)
-
-        logging.info("Registry values set successfully.")
-    except Exception as e:
-        logging.error(f"Error setting registry values: {e}")
-
-
-def main():
+    setup_logging()
     config_data = read_config_file(CONFIG_FILE)
 
-    if config_data and "localeValues" in config_data:
-        try:
-            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, KEY_PATH, 0, winreg.KEY_SET_VALUE)
-        except FileNotFoundError:
-            key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, KEY_PATH)
+    if not config_data:
+        logging.error("Failed to read the configuration file.")
+        return
 
-        set_registry_values(key, config_data)
-    else:
-        logging.error("Configuration validation failed or the configuration file could not be read.")
+    locale_settings_keys = [
+        {'key': 'enabled', 'type': bool},
+        {'key': 'formatOptions', 'type': dict}
+    ]
+    if not validate_config_section(config_data.get("localeSettings", {}), locale_settings_keys):
+        logging.error("The 'localeSettings' section in the configuration is invalid.")
+        return
+
+    modify_locale(config_data["localeSettings"]["formatOptions"], config_data["localeSettings"]["enabled"])
 
 
 if __name__ == "__main__":
