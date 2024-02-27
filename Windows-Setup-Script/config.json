@@ -35,164 +35,164 @@
     "enabled": true,
     "formatOptions": {
       "Locale": {
-        "value": "00000409",
-        "enabled": true
+        "enabled": true,
+        "value": "00000409"
       },
       "LocaleName": {
-        "value": "en-US",
-        "enabled": true
+        "enabled": true,
+        "value": "en-US"
       },
       "s1159": {
-        "value": "AM",
-        "enabled": true
+        "enabled": true,
+        "value": "AM"
       },
       "s2359": {
-        "value": "PM",
-        "enabled": true
+        "enabled": true,
+        "value": "PM"
       },
       "sCurrency": {
-        "value": "zł",
-        "enabled": true
+        "enabled": true,
+        "value": "zł"
       },
       "sDate": {
-        "value": "/",
-        "enabled": true
+        "enabled": true,
+        "value": "/"
       },
       "sDecimal": {
-        "value": ".",
-        "enabled": true
+        "enabled": true,
+        "value": "."
       },
       "sGrouping": {
-        "value": "3;0",
-        "enabled": true
+        "enabled": true,
+        "value": "3;0"
       },
       "sLanguage": {
-        "value": "ENU",
-        "enabled": true
+        "enabled": true,
+        "value": "ENU"
       },
       "sList": {
-        "value": ",",
-        "enabled": true
+        "enabled": true,
+        "value": ","
       },
       "sLongDate": {
-        "value": "dddd, d MMMM yyyy",
-        "enabled": true
+        "enabled": true,
+        "value": "dddd, d MMMM yyyy"
       },
       "sMonDecimalSep": {
-        "value": ".",
-        "enabled": true
+        "enabled": true,
+        "value": "."
       },
       "sMonGrouping": {
-        "value": "3;0",
-        "enabled": true
+        "enabled": true,
+        "value": "3;0"
       },
       "sMonThousandSep": {
-        "value": " ",
-        "enabled": true
+        "enabled": true,
+        "value": " "
       },
       "sNativeDigits": {
-        "value": "0123456789",
-        "enabled": true
+        "enabled": true,
+        "value": "0123456789"
       },
       "sNegativeSign": {
-        "value": "-",
-        "enabled": true
+        "enabled": true,
+        "value": "-"
       },
       "sPositiveSign": {
-        "value": "",
-        "enabled": true
+        "enabled": true,
+        "value": ""
       },
       "sShortDate": {
-        "value": "dd/MM/yyyy",
-        "enabled": true
+        "enabled": true,
+        "value": "dd/MM/yyyy"
       },
       "sThousand": {
-        "value": " ",
-        "enabled": true
+        "enabled": true,
+        "value": " "
       },
       "sTime": {
-        "value": ":",
-        "enabled": true
+        "enabled": true,
+        "value": ":"
       },
       "sTimeFormat": {
-        "value": "HH:mm:ss",
-        "enabled": true
+        "enabled": true,
+        "value": "HH:mm:ss"
       },
       "sShortTime": {
-        "value": "HH:mm",
-        "enabled": true
+        "enabled": true,
+        "value": "HH:mm"
       },
       "sYearMonth": {
-        "value": "MMMM yyyy",
-        "enabled": true
+        "enabled": true,
+        "value": "MMMM yyyy"
       },
       "iCalendarType": {
-        "value": "1",
-        "enabled": true
+        "enabled": true,
+        "value": "1"
       },
       "iCountry": {
-        "value": "1",
-        "enabled": true
+        "enabled": true,
+        "value": "1"
       },
       "iCurrDigits": {
-        "value": "2",
-        "enabled": true
+        "enabled": true,
+        "value": "2"
       },
       "iCurrency": {
-        "value": "3",
-        "enabled": true
+        "enabled": true,
+        "value": "3"
       },
       "iDate": {
-        "value": "1",
-        "enabled": true
+        "enabled": true,
+        "value": "1"
       },
       "iDigits": {
-        "value": "2",
-        "enabled": true
+        "enabled": true,
+        "value": "2"
       },
       "NumShape": {
-        "value": "1",
-        "enabled": true
+        "enabled": true,
+        "value": "1"
       },
       "iFirstDayOfWeek": {
-        "value": "0",
-        "enabled": true
+        "enabled": true,
+        "value": "0"
       },
       "iFirstWeekOfYear": {
-        "value": "0",
-        "enabled": true
+        "enabled": true,
+        "value": "0"
       },
       "iLZero": {
-        "value": "1",
-        "enabled": true
+        "enabled": true,
+        "value": "1"
       },
       "iMeasure": {
-        "value": "0",
-        "enabled": true
+        "enabled": true,
+        "value": "0"
       },
       "iNegCurr": {
-        "value": "8",
-        "enabled": true
+        "enabled": true,
+        "value": "8"
       },
       "iNegNumber": {
-        "value": "1",
-        "enabled": true
+        "enabled": true,
+        "value": "1"
       },
       "iPaperSize": {
-        "value": "1",
-        "enabled": true
+        "enabled": true,
+        "value": "1"
       },
       "iTime": {
-        "value": "1",
-        "enabled": true
+        "enabled": true,
+        "value": "1"
       },
       "iTimePrefix": {
-        "value": "0",
-        "enabled": true
+        "enabled": true,
+        "value": "0"
       },
       "iTLZero": {
-        "value": "1",
-        "enabled": true
+        "enabled": true,
+        "value": "1"
       }
     }
   },
@@ -200,9 +200,10 @@
     "enabled": true,
     "services": [
       {
-        "name": "LenovoFnAndFunctionKeys",
-        "startupType": "Disabled",
-        "serviceStatus": "Stopped"
+        "enabled": true,
+        "name": "XboxNetApiSvc",
+        "startupType": "Automatic",
+        "serviceStatus": "Start"
       }
     ]
   }
