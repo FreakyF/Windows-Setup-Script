@@ -36,7 +36,8 @@ Windows-Setup-Script emerged from the need to simplify the post-formatting setup
 * **Folder Creation**: Automatically creates folders based on user configurations, aiding in the initial organization of the system.
 
 * **Folder Hiding**: Allows specific folders to be hidden, reducing clutter on the system.
-Defender Exclusions: Automatically adds specified files and applications as exclusions in Windows Defender to avoid scanning trusted items.
+
+* **Defender Exclusions**: Automatically adds specified files and applications as exclusions in Windows Defender to avoid scanning trusted items.
 
 * **Locale Settings**: Customizes language and region settings to align with user preferences, enhancing the personal feel of the system.
 
