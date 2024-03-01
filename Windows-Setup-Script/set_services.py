@@ -50,7 +50,7 @@ def modify_windows_services(services_list: List[dict], enabled: bool) -> None:
             logging.info(f"Attempting to {desired_state} {name}...")
             if desired_state == "start":
                 subprocess.run(["sc", "start", name], check=True, text=True)
-                time.sleep(2)  # Wait for a couple of seconds to let the service respond
+                time.sleep(2)
             elif desired_state == "stop":
                 subprocess.run(["sc", "stop", name], check=True, text=True)
                 time.sleep(2)
