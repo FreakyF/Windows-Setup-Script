@@ -1,109 +1,63 @@
-import os
 import subprocess
-from typing import List
+from typing import Dict
 
-from config_service import setup_logging, read_config_file, validate_config_section, logging
+from config_service import setup_logging, read_config_file, logging
 
 CONFIG_FILE = "config.json"
 
-GET_EXCLUSION_CMDLET = "Get-MpPreference | Select-Object -ExpandProperty ExclusionPath"
-ADD_EXCLUSION_CMDLET = "Add-MpPreference -ExclusionPath"
+CMDLETS = {
+    "Folder": "Add-MpPreference -ExclusionPath",
+    "File": "Add-MpPreference -ExclusionPath",
+    "FileType": "Add-MpPreference -ExclusionExtension",
+    "Process": "Add-MpPreference -ExclusionProcess"
+}
 
 
-def get_current_exclusions() -> List[str]:
+def add_exclusion(exclusion: Dict[str, str]) -> None:
     """
-    Retrieves the current list of folder paths that are excluded from scanning by Windows Defender. This is achieved by
-    executing a PowerShell command that queries Windows Defender's preferences for excluded paths.
-
-    Returns:
-    - List[str]: A list of paths that are currently excluded.
-    """
-    try:
-        result = subprocess.check_output(["powershell", "-Command", GET_EXCLUSION_CMDLET], text=True)
-        exclusions = [line.strip() for line in result.split('\n') if line.strip()]
-        return exclusions
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Failed to retrieve current exclusions: {str(e)}")
-        return []
-
-
-def add_exclusion(folder_path: str) -> None:
-    """
-    Adds a specified folder path to the list of exclusions in Windows Defender, effectively preventing the antivirus
-    from scanning the specified folder. This function constructs and executes a PowerShell command for adding an
-    exclusion path.
+    Adds an exclusion to Windows Defender, using the appropriate PowerShell cmdlet based on the type of exclusion.
 
     Parameters:
-    - folder_path (str): The path of the folder to add to exclusions.
+    - exclusion (Dict[str, str]): A dictionary containing the type and path of the exclusion.
     """
-    cmd = f"{ADD_EXCLUSION_CMDLET} '{folder_path}'"
+    cmdlet = CMDLETS[exclusion['type']]
+    path = exclusion['path']
+    cmd = f"{cmdlet} '{path}'"
     try:
-        subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True, check=True)
+        subprocess.run(["powershell", "-Command", cmd], check=True, capture_output=True, text=True)
+        logging.info(f"Successfully added {exclusion['type']} exclusion: {path}")
     except subprocess.CalledProcessError as e:
-        logging.error(
-            f"Failed to add '{folder_path}' to Windows Defender exclusions. PowerShell error: {e.stderr.strip()}")
-        raise
+        logging.error(f"Failed to add {exclusion['type']} exclusion: {path}. Error: {e.stderr.strip()}")
 
 
-def add_folders_to_exclusions(folders_list: List[str], enabled: bool) -> None:
+def process_exclusions(exclusions_config: Dict[str, any]) -> None:
     """
-    Adds directories specified in `folders_list` to Windows Defender exclusions if `enabled` is True.  Each folder is
-    added only if it is not already excluded. The function logs the outcome of each attempt to exclude a directory,
-    including cases where the directory is already excluded, where the exclusion is successful, and where an error
-    occurs during exclusion. Paths in `folders_list` can include environment variables, which are expanded to their
-    values.
+    Processes the exclusions configuration to add each specified exclusion to Windows Defender.
 
     Parameters:
-    - folders_list (List[str]): A list of directory paths to add to exclusions.
-    - enabled (bool): If False, adding exclusions is skipped, and a log entry is made indicating it's disabled.
+    - exclusions_config (Dict[str, any]): The configuration for exclusions.
     """
-    if not enabled:
-        logging.info("Adding folders to Windows Defender exclusions is skipped as it's disabled by configuration.")
+    if not exclusions_config.get('enabled', False):
+        logging.info("Exclusions are disabled in configuration.")
         return
 
-    current_exclusions = get_current_exclusions()
-
-    for folder_path in folders_list:
-        folder_path = os.path.expandvars(folder_path)
-
-        if not os.path.exists(folder_path):
-            logging.error(f"Directory '{folder_path}' does not exist. Skipping...")
-            continue
-
-        if folder_path in current_exclusions:
-            logging.info(f"Directory '{folder_path}' is already in Windows Defender exclusions.")
-            continue
-
-        try:
-            add_exclusion(folder_path)
-            logging.info(f"Directory '{folder_path}' was added to Windows Defender exclusions.")
-        except Exception as e:
-            logging.error(f"Failed to add directory '{folder_path}' to Windows Defender exclusions: {str(e)}")
+    for exclusion in exclusions_config.get('exclusions', []):
+        add_exclusion(exclusion)
 
 
 def main() -> None:
     """
-    Executes the main functionality of the script which includes setting up logging, reading the configuration file,
-    validating the 'excludeFoldersFromDefender' configuration section, add directories to Windows Defender exclusions
-    based on the configuration.
+    Main function to read configuration and add specified exclusions to Windows Defender.
     """
     setup_logging()
     config_data = read_config_file(CONFIG_FILE)
 
     if not config_data:
-        logging.error("Failed to read the configuration file.")
+        logging.error("Failed to read configuration file.")
         return
 
-    defender_exclusions_section_keys = [
-        {'key': 'enabled', 'type': bool},
-        {'key': 'paths', 'type': list}
-    ]
-    if not validate_config_section(config_data.get("excludeFoldersFromDefender", {}), defender_exclusions_section_keys):
-        logging.error("The 'excludeFoldersFromDefender' section in the configuration is invalid.")
-        return
-
-    add_folders_to_exclusions(config_data["excludeFoldersFromDefender"]["paths"],
-                              config_data["excludeFoldersFromDefender"]["enabled"])
+    exclusions_config = config_data.get("excludeFromDefender", {})
+    process_exclusions(exclusions_config)
 
 
 if __name__ == "__main__":
