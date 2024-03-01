@@ -21,14 +21,33 @@
       "C:\\Recovery"
     ]
   },
-  "excludeFoldersFromDefender": {
+  "excludeFromDefender": {
     "enabled": true,
-    "paths": [
-      "C:\\Repos",
-      "C:\\Games",
-      "C:\\Virtual Machines",
-      "%USERPROFILE%\\Desktop",
-      "%USERPROFILE%\\Downloads"
+    "exclusions": [
+      {
+        "type": "Folder",
+        "path": "C:\\Repos"
+      },
+      {
+        "type": "Folder",
+        "path": "C:\\Games"
+      },
+      {
+        "type": "Folder",
+        "path": "C:\\Virtual Machines"
+      },
+      {
+        "type": "Folder",
+        "path": "%USERPROFILE%\\Desktop"
+      },
+      {
+        "type": "Folder",
+        "path": "%USERPROFILE%\\Downloads"
+      },
+      {
+        "type": "FileType",
+        "path": ".txt"
+      }
     ]
   },
   "localeSettings": {
