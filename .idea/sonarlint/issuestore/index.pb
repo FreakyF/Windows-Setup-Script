@@ -5,3 +5,17 @@
 -.idea/sonarlint/securityhotspotstore/index.pb,8\8\88a9255124c95bdc913197c120a8d560edc59c8e
 S
 #.idea/sonarlint/issuestore/index.pb,9\f\9fe84ebb15faf917b7def6236dba604453cc61e0
+?
+set_services.py,6\0\600d3325b2c5dcee2d2f99c2d8ba268b24682d46
+Å
+Q.idea/sonarlint/securityhotspotstore/6/0/600d3325b2c5dcee2d2f99c2d8ba268b24682d46,1\7\17b4e1f8e824b0e0d295d077ddc8163aee62c763
+Å
+Q.idea/sonarlint/securityhotspotstore/9/f/9fe84ebb15faf917b7def6236dba604453cc61e0,b\b\bbf202272a96de5cd6b6828ffdc55fb3ce45289c
+w
+G.idea/sonarlint/issuestore/8/8/88a9255124c95bdc913197c120a8d560edc59c8e,a\e\ae9ddf453f55affea2d6b9e3973cac1eb2efb4e1
+Å
+Q.idea/sonarlint/securityhotspotstore/8/8/88a9255124c95bdc913197c120a8d560edc59c8e,9\0\909762385fc6eb20f922a91c6865741308b57f2c
+w
+G.idea/sonarlint/issuestore/6/0/600d3325b2c5dcee2d2f99c2d8ba268b24682d46,3\b\3b5681b37f84127e2d776ef03580dcea2871cad8
+w
+G.idea/sonarlint/issuestore/9/f/9fe84ebb15faf917b7def6236dba604453cc61e0,f\0\f0e0f9cec86fe4b939ae22be5264c758801eb28f
