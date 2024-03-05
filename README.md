@@ -1,4 +1,4 @@
-![Windows Setup Script Logo](/Windows-Setup-Script/assets/logo.png)
+![Windows Setup Script Logo](/assets/logo.png)
 
 ---
 
