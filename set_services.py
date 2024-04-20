@@ -7,17 +7,72 @@ from config_service import setup_logging, read_config_file, validate_config_sect
 CONFIG_FILE = "config.json"
 
 
-def modify_windows_services(services_list: List[dict], enabled: bool) -> None:
-    """
-    Modifies Windows services based on the provided `services_list` if `enabled` is True. Each service in the list is
-    modified according to the specified parameters, such as startup type and service status.
-    The function logs the outcome of each modification attempt, including cases where the service is already in the
-    desired state, where the modification is successful, and where an error occurs during the process.
+def query_service_status(service_name: str) -> str:
+    try:
+        output = subprocess.check_output(["sc", "query", service_name], text=True)
+        if "RUNNING" in output:
+            return "running"
+        elif "STOPPED" in output:
+            return "stopped"
+        elif "PAUSED" in output:
+            return "paused"
+    except subprocess.CalledProcessError:
+        return "unknown"
 
-    Parameters:
-    - services_list (List[dict]): A list of dictionaries representing Windows services to be modified.
-    - enabled (bool): If False, service modification is skipped, and a log entry is made indicating it's disabled.
-    """
+
+def wait_for_service_status(service_name: str, target_status: str, timeout: int = 30) -> bool:
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        current_status = query_service_status(service_name)
+        if current_status == target_status:
+            return True
+        time.sleep(2)
+    return False
+
+
+def change_service_startup_type(name: str, startup_type: str) -> None:
+    sc_startup_type = {
+        "Automatic": "auto",
+        "Manual": "demand",
+        "Disabled": "disabled",
+        "Automatic (Delayed Start)": "delayed-auto"
+    }.get(startup_type)
+
+    if sc_startup_type is None:
+        logging.error(f"Invalid startup type '{startup_type}' for service '{name}'.")
+        return
+
+    try:
+        subprocess.check_output(["sc", "config", name, "start=", sc_startup_type], text=True)
+        logging.info(f"Successfully changed startup type for {name} to {startup_type}.")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Failed to change startup type for {name}. Error: {e.output}")
+
+
+def handle_service_state(name: str, desired_state: str) -> None:
+    desired_state_map = {"start": "running", "stop": "stopped", "pause": "paused", "resume": "running"}
+    target_status = desired_state_map.get(desired_state)
+
+    if not target_status:
+        logging.error(f"Invalid desired state '{desired_state}' for service '{name}'.")
+        return
+
+    current_status = query_service_status(name)
+    if current_status == target_status:
+        logging.info(f"Service {name} is already in the desired status: {desired_state}.")
+        return
+
+    try:
+        subprocess.run(["sc", desired_state, name], check=True, text=True)
+        if wait_for_service_status(name, target_status):
+            logging.info(f"Service {name} successfully changed to {desired_state}.")
+        else:
+            logging.error(f"Failed to change the status of {name} to {desired_state}.")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Error while attempting to change the state of {name} to {desired_state}: {e}")
+
+
+def modify_windows_services(services_list: List[dict], enabled: bool) -> None:
     if not enabled:
         logging.info("Service modification is disabled.")
         return
@@ -27,49 +82,11 @@ def modify_windows_services(services_list: List[dict], enabled: bool) -> None:
         startup_type = service.get("startupType")
         desired_state = service.get("serviceStatus").lower()
 
-        startup_type_mapping = {
-            "Automatic": "auto",
-            "Manual": "demand",
-            "Disabled": "disabled",
-            "Automatic (Delayed Start)": "delayed-auto"
-        }
-
-        sc_startup_type = startup_type_mapping.get(startup_type)
-
-        if sc_startup_type is None:
-            logging.error(f"Invalid startup type '{startup_type}' for service '{name}'.")
-            continue
-
-        try:
-            subprocess.check_output(["sc", "config", name, "start=", sc_startup_type], text=True)
-            logging.info(f"Successfully changed startup type for {name} to {startup_type}.")
-        except subprocess.CalledProcessError as e:
-            logging.error(f"Failed to change startup type for {name}. Error: {e.output}")
-
-        try:
-            logging.info(f"Attempting to {desired_state} {name}...")
-            if desired_state == "start":
-                subprocess.run(["sc", "start", name], check=True, text=True)
-                time.sleep(2)
-            elif desired_state == "stop":
-                subprocess.run(["sc", "stop", name], check=True, text=True)
-                time.sleep(2)
-
-            status_output = subprocess.check_output(["sc", "query", name], text=True)
-            if desired_state in status_output.lower():
-                logging.info(f"Service {name} is now in the desired status: {desired_state}.")
-            else:
-                logging.error(f"Failed to {desired_state} {name}. Current status not as expected.")
-        except subprocess.CalledProcessError as e:
-            logging.error(f"Error while attempting to {desired_state} {name}: {e}")
+        change_service_startup_type(name, startup_type)
+        handle_service_state(name, desired_state)
 
 
 def main() -> None:
-    """
-    Executes the main functionality of the script which includes setting up logging, reading the configuration file,
-    validating the 'servicesSettings' configuration section, and conditionally modifying services based on the
-    configuration.
-    """
     setup_logging()
     config_data = read_config_file(CONFIG_FILE)
 
