@@ -8,6 +8,17 @@ CONFIG_FILE = "config.json"
 
 
 def query_service_startup_type(service_name: str) -> str:
+    """
+    Queries the startup type of Windows service using the 'sc qc' command and returns the service startup type.
+    The function maps the output to simplified keywords like 'auto', 'demand', 'disabled', and 'delayed-auto'. If the
+    command fails, it returns 'unknown'.
+
+    Parameters:
+    - service_name (str): The name of the service to query.
+
+    Returns:
+    - str: The startup type of the service.
+    """
     try:
         output = subprocess.check_output(["sc", "qc", service_name], text=True)
         if "AUTO_START" in output:
@@ -23,6 +34,16 @@ def query_service_startup_type(service_name: str) -> str:
 
 
 def query_service_status(service_name: str) -> str:
+    """
+    Queries the current status of a Windows service using the 'sc query' command. The function returns the service
+    status such as 'running', 'stopped', or 'paused'. If the command execution fails, it returns 'unknown'.
+
+    Parameters:
+    - service_name (str): The name of the service to query.
+
+    Returns:
+    - str: The current status of the service.
+    """
     try:
         output = subprocess.check_output(["sc", "query", service_name], text=True)
         if "RUNNING" in output:
@@ -36,6 +57,18 @@ def query_service_status(service_name: str) -> str:
 
 
 def wait_for_service_status(service_name: str, target_status: str, timeout: int = 30) -> bool:
+    """
+    Waits for a service to reach a specific status within a given timeout period. The function periodically checks the
+    service status and returns True if the service reaches the target status within the timeout, otherwise return False.
+
+    Parameters:
+    - service_name (str): The name of the service.
+    - target_status (str): The desired status to wait for ('running', 'stopped', 'paused').
+    - timeout (int): The maximum time in seconds to wait for the service to reach the target status.
+
+    Returns:
+    - bool: True if the service reaches the target status within the timeout, otherwise False.
+    """
     start_time = time.time()
     while time.time() - start_time < timeout:
         current_status = query_service_status(service_name)
@@ -46,6 +79,15 @@ def wait_for_service_status(service_name: str, target_status: str, timeout: int 
 
 
 def change_service_startup_type(name: str, startup_type: str) -> None:
+    """
+    Changes the startup type of Windows service using the 'sc config' command. The function first checks if the
+    requested startup type is valid and then modifies the service if its current startup type differs from the requested
+    one. Logs the outcome of each modification attempt.
+
+    Parameters:
+    - name (str): The name of the service.
+    - startup_type (str): The desired startup type ('Automatic', 'Manual', 'Disabled', 'Automatic (Delayed Start)').
+    """
     sc_startup_type = {
         "Automatic": "auto",
         "Manual": "demand",
@@ -94,6 +136,15 @@ def handle_service_state(name: str, desired_state: str) -> None:
 
 
 def modify_windows_services(services_list: List[dict], enabled: bool) -> None:
+    """
+       Modifies the current state of a Windows service (start, stop, pause, resume) using the 'sc' command. The function
+       first validates the requested state, checks the current state, and proceeds with the state change if necessary.
+       It waits to confirm the state change and logs the outcome.
+
+       Parameters:
+       - name (str): The name of the service.
+       - desired_state (str): The desired state action ('start', 'stop', 'pause', 'resume').
+       """
     if not enabled:
         logging.info("Service modification is disabled.")
         return
@@ -108,6 +159,11 @@ def modify_windows_services(services_list: List[dict], enabled: bool) -> None:
 
 
 def main() -> None:
+    """
+    Executes the main functionality of the script which includes setting up logging, reading the configuration file,
+    validating the 'servicesSettings' configuration section, and conditionally modifying services startup type and
+    status based on the configuration.
+    """
     setup_logging()
     config_data = read_config_file(CONFIG_FILE)
 
