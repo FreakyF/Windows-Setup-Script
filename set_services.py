@@ -101,7 +101,7 @@ def change_service_startup_type(name: str, startup_type: str) -> None:
 
     current_startup_type = query_service_startup_type(name)
     if sc_startup_type == current_startup_type:
-        logging.info(f"Service {name} is already in the desired startup type: {startup_type}.")
+        logging.info(f"Service {name} is already in the desired startup type: {startup_type}. Skipping...")
         return
 
     try:
@@ -126,12 +126,12 @@ def handle_service_state(name: str, desired_state: str) -> None:
     target_status = desired_state_map.get(desired_state)
 
     if not target_status:
-        logging.error(f"Invalid desired state '{desired_state}' for service '{name}'.")
+        logging.error(f"Invalid desired state '{desired_state}' for service '{name}'. Skipping...")
         return
 
     current_status = query_service_status(name)
     if current_status == target_status:
-        logging.info(f"Service {name} is already in the desired status: {desired_state}.")
+        logging.info(f"Service {name} is already in the desired status: {desired_state}. Skipping...")
         return
 
     pause_supported = False
@@ -143,15 +143,15 @@ def handle_service_state(name: str, desired_state: str) -> None:
         resume_supported = True
 
     if desired_state == "pause" and not pause_supported:
-        logging.error(f"Pause operation is not supported for service '{name}'.")
+        logging.error(f"Pause operation is not supported for service '{name}'. Skipping...")
         return
     elif desired_state == "resume" and not resume_supported:
-        logging.error(f"Resume operation is not supported for service '{name}'.")
+        logging.error(f"Resume operation is not supported for service '{name}'. Skipping...")
         return
 
     startup_type = query_service_startup_type(name)
     if startup_type == "disabled" and desired_state == "start":
-        logging.error(f"Cannot start service '{name}' because its startup type is Disabled.")
+        logging.error(f"Cannot start service '{name}' because its startup type is Disabled. Skipping...")
         return
 
     try:
@@ -176,7 +176,7 @@ def modify_windows_services(services_list: List[dict], enabled: bool) -> None:
        - desired_state (str): The desired state action ('start', 'stop', 'pause', 'resume').
        """
     if not enabled:
-        logging.info("Service modification is disabled.")
+        logging.info("Service modification is skipped as it's disabled by configuration.")
         return
 
     for service in services_list:
