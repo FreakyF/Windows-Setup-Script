@@ -63,7 +63,7 @@ def change_service_startup_type(name: str, startup_type: str) -> None:
         return
 
     try:
-        subprocess.check_output(["sc", "config", name, "start=", sc_startup_type], text=True)
+        subprocess.check_output(["sc", "config", name, "start=", sc_startup_type], text=True, stderr=subprocess.DEVNULL)
         logging.info(f"Successfully changed startup type for {name} to {startup_type}.")
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to change startup type for {name}. Error: {e.output}")
@@ -83,7 +83,8 @@ def handle_service_state(name: str, desired_state: str) -> None:
         return
 
     try:
-        subprocess.run(["sc", desired_state, name], check=True, text=True)
+        subprocess.run(["sc", desired_state, name], check=True, text=True, stdout=subprocess.DEVNULL,
+                       stderr=subprocess.DEVNULL)
         if wait_for_service_status(name, target_status):
             logging.info(f"Service {name} successfully changed to {desired_state}.")
         else:
