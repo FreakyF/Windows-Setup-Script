@@ -112,6 +112,16 @@ def change_service_startup_type(name: str, startup_type: str) -> None:
 
 
 def handle_service_state(name: str, desired_state: str) -> None:
+    """
+    Handles the state of a Windows service based on the desired action ('start', 'stop', 'pause', 'resume').
+    It first validates the desired state, checks the current state of the service, and proceeds with the state change
+    if necessary. It also verifies if pause and resume operations are supported for the service, and whether the
+    startup type allows starting the service. It logs the outcome of the state change operation.
+
+    Parameters:
+    - name (str): The name of the service.
+    - desired_state (str): The desired action for the service ('start', 'stop', 'pause', 'resume').
+    """
     desired_state_map = {"start": "running", "stop": "stopped", "pause": "paused", "resume": "running"}
     target_status = desired_state_map.get(desired_state)
 
