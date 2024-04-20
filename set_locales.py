@@ -20,7 +20,7 @@ def modify_locale(settings: dict, enabled: bool) -> None:
     - enabled (bool): If False, registry modification is skipped, and a log entry is made indicating this feature is disabled.
     """
     if not enabled:
-        logging.info("Registry modification is skipped as it's disabled by configuration.")
+        logging.info("Locale modification is skipped as it's disabled by configuration.")
         return
 
     try:
