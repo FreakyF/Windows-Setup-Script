@@ -124,6 +124,26 @@ def handle_service_state(name: str, desired_state: str) -> None:
         logging.info(f"Service {name} is already in the desired status: {desired_state}.")
         return
 
+    pause_supported = False
+    resume_supported = False
+    output = subprocess.check_output(["sc", "qc", name], text=True)
+    if "PAUSABLE" in output:
+        pause_supported = True
+    if "RESUME_PENDING" in output:
+        resume_supported = True
+
+    if desired_state == "pause" and not pause_supported:
+        logging.error(f"Pause operation is not supported for service '{name}'.")
+        return
+    elif desired_state == "resume" and not resume_supported:
+        logging.error(f"Resume operation is not supported for service '{name}'.")
+        return
+
+    startup_type = query_service_startup_type(name)
+    if startup_type == "disabled" and desired_state == "start":
+        logging.error(f"Cannot start service '{name}' because its startup type is Disabled.")
+        return
+
     try:
         subprocess.run(["sc", desired_state, name], check=True, text=True, stdout=subprocess.DEVNULL,
                        stderr=subprocess.DEVNULL)
